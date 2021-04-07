@@ -1,19 +1,18 @@
+"""
+    A Notepad like application with additional features.
+    Additional features are included under options in the menubar.
+    ~ Ronik Bhattacharjee
+"""
+
+
 from tkinter import *
-import tkinter.filedialog, tkinter.messagebox, tkinter.colorchooser, tkinter.font
+import tkinter.filedialog, tkinter.messagebox, tkinter.colorchooser, tkinter.font, tkinter.ttk
 import pyautogui as pg
 import datetime
 from tkfontchooser import askfont
 import webbrowser
 from googletrans import Translator
-
-
-var1 = ""
-
-def translation_opt(sel, lan):
-    global var1
-    translator = Translator(service_urls=['translate.googleapis.com'])
-    translation=translator.translate(sel,dest=lan)
-    var1.set(translation.text)
+from tkinter.scrolledtext import ScrolledText
 
 
 def PyPad():
@@ -72,9 +71,9 @@ def PyPad():
     view_menu=Menu(main_menu,tearoff=0)
     view_menu.add_command(label='Evaluate', command=k.evaluate)
     view_menu.add_command(label='Translate', command=k.translate)
-    view_menu.add_command(label='Pronounce', command=k.pronounce)
+    # view_menu.add_command(label='Text to Speech', command=k.text_to_speech)
+    # view_menu.add_command(label='Speech to Text', command=k.speech_to_text)
     view_menu.add_command(label='Search on web', command=k.search_on_web)
-    view_menu.add_command(label='Status Bar')
 
     main_menu.add_cascade(label='File', menu = file_menu)
     main_menu.add_cascade(label='Edit', menu = edit_menu)
@@ -89,6 +88,7 @@ def PyPad():
 
 
 class TextWidget:
+
     def __init__(self, root, text):
         self.root = root
         self.text = text 
@@ -191,28 +191,164 @@ class TextWidget:
 
 
     def translate(self):
+
+        sel = None
+        def translation_opt():
+            t = opt_var.get()
+            translator = Translator(service_urls=['translate.googleapis.com'])
+            translation=translator.translate(var2.get(),dest=t)
+            textbox.replace("1.0", END, translation.text)
+            # var2.set(translation.text)
+
+        lang_list = [
+            'afrikaans',
+            'albanian',
+            'amharic',
+            'arabic',
+            'armenian',
+            'azerbaijani',
+            'basque',
+            'belarusian',
+            'bengali',
+            'bosnian',
+            'bulgarian',
+            'catalan',
+            'cebuano',
+            'chichewa',
+            'chinese (simplified)',
+            'chinese (traditional)',
+            'corsican',
+            'croatian',
+            'czech',
+            'danish',
+            'dutch',
+            'english',
+            'esperanto',
+            'estonian',
+            'filipino',
+            'finnish',
+            'french',
+            'frisian',
+            'galician',
+            'georgian',
+            'german',
+            'greek',
+            'gujarati',
+            'haitian creole',
+            'hausa',
+            'hawaiian',
+            'hebrew',
+            'hebrew',
+            'hindi',
+            'hmong',
+            'hungarian',
+            'icelandic',
+            'igbo',
+            'indonesian',
+            'irish',
+            'italian',
+            'japanese',
+            'javanese',
+            'kannada',
+            'kazakh',
+            'khmer',
+            'korean',
+            'kurdish (kurmanji)',
+            'kyrgyz',
+            'lao',
+            'latin',
+            'latvian',
+            'lithuanian',
+            'luxembourgish',
+            'macedonian',
+            'malagasy',
+            'malay',
+            'malayalam',
+            'maltese',
+            'maori',
+            'marathi',
+            'mongolian',
+            'myanmar (burmese)',
+            'nepali',
+            'norwegian',
+            'odia',
+            'pashto',
+            'persian',
+            'polish',
+            'portuguese',
+            'punjabi',
+            'romanian',
+            'russian',
+            'samoan',
+            'scots gaelic',
+            'serbian',
+            'sesotho',
+            'shona',
+            'sindhi',
+            'sinhala',
+            'slovak',
+            'slovenian',
+            'somali',
+            'spanish',
+            'sundanese',
+            'swahili',
+            'swedish',
+            'tajik',
+            'tamil',
+            'telugu',
+            'thai',
+            'turkish',
+            'ukrainian',
+            'urdu',
+            'uyghur',
+            'uzbek',
+            'vietnamese',
+            'welsh',
+            'xhosa',
+            'yiddish',
+            'yoruba',
+            'zulu',
+        ]
         try:
             sel = self.text.selection_get()
-            top = Toplevel(self.root) 
-            top.title("Translation - PyPad") 
-            top.geometry("300x300")
+        except:
+            tkinter.messagebox.showinfo('PyPad', 'You need to select something to translate')
+        
+        if sel:
+            try:
+                master = Toplevel(self.root)
+                master.geometry("600x600")
+                master.title("Translation - PyPad")
+                master["bg"] = "#fff"
+                tools_area = Frame(master=master,bg="#1F7DFF",width=100)      
+                tools_area.pack(side=LEFT,fill=Y)
 
-            lan = StringVar(top)
-            lan.set('Hindi')
-            choices = { 'English','Hindi','Gujarati','Spanish','German'}
-            lan_menu = OptionMenu( top, lan, *choices)
-            Label(top,text="Select a language").pack()
-            lan_menu.pack()
+                var2 = StringVar()  # to be translated
+                var2.set(sel)
 
-            var1 = StringVar(top)
-            Button(top,text='Translate',command=translation_opt(sel, lan)).pack()
-            output = Label(top, text=var1)
-            output.pack()
-            top.mainloop() 
-        except Exception as e:
-            tkinter.messagebox.showinfo('PyPad', e)
+                opt_var = StringVar(master)
+                opt_var.set('Hindi')   # default option
+
+                opt_frame = LabelFrame(master=tools_area,bg="#1F7DFF",fg="#fff",text="Select Language",labelanchor='n',relief=GROOVE,bd=1)   
+                opt_frame.pack(anchor="center",padx=10,pady=20)
+                e = tkinter.ttk.Combobox(opt_frame, textvariable=opt_var, values=lang_list)
+                e.pack(anchor="center",padx=10,pady=10)
+
+                textbox = ScrolledText(master, bg="#fff", wrap = tkinter.WORD)
+                textbox.pack(expand = True, fill=BOTH)
+                textbox.insert("insert", var2.get())
+                # textbox = Label(master, textvariable=var2, bg="#fff").pack(expand = True, fill=BOTH)
+
+                Button(tools_area, width=8, height=1,relief=FLAT, text='Translate',command=translation_opt).pack(padx=12,pady=10,anchor="center", side=BOTTOM)
+                master.mainloop()
+                
+            except Exception as e:
+                tkinter.messagebox.showinfo('PyPad', e)
     
-    def pronounce(self):
+    def text_to_speech(self):
+        pass
+
+    def speech_to_text(self):
         pass
     
     def search_on_web(self):
@@ -230,7 +366,7 @@ class TextWidget:
             self.text["wrap"] = "none"
 
     def about(self):
-        tkinter.messagebox.showinfo('PyPad', 'A writing pad written in python.\n\n~ Made by Ronik Bhattacharjee')
+        tkinter.messagebox.showinfo('PyPad', 'A Notepad like app written in python with some additional features that are included under options in the menubar.\n\n~ Made by Ronik Bhattacharjee')
 
 
 
