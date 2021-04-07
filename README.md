@@ -1,2 +1,2 @@
 # PyPad
-A Notepad like app written in Python
+A Notepad like app written in Python with some additional features.
