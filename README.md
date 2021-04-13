@@ -1,16 +1,15 @@
 # PyPad
-A Notepad like app written in Python with some additional features like <em>evaluating a selected simple expression, translating selected phrases and searching selected phrases on web.</em>
+A Text Editor written in Python with some additional features other than the basic features of Notepad.
 
 <br>
 
-## Screenshots
-
-![1](./images/1.png)
-
-![2](./images/2.png)
-
-![3](./images/3.png)
-
-![4](./images/4.png)
-
-![5](./images/5.png)
+## Additional Features
+*   Speech to Text
+*   Text to Speech
+*   Search on Web
+*   Translation
+*   Auto Spell Check (Wordlist Link :  https://github.com/dwyl/english-words)
+*   Evaluation of simple mathematical expressions
+*   Total Characters
+*   Custom Font Style and Color
+*   Uppercase / Lowercase toggle

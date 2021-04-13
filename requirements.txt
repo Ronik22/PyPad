@@ -3,3 +3,7 @@ pyautogui
 tkfontchooser
 googletrans==3.1.0a0
 webbrowser
+pyttsx3
+SpeechRecognition
+threadpoolctl
+PyAudio

@@ -1,6 +1,5 @@
 """
-    A Notepad like application with additional features.
-    Additional features are included under options in the menubar.
+    A Text Editor written in Python with some additional features other than the basic features of Notepad.
     ~ Ronik Bhattacharjee
 """
 
@@ -453,7 +452,7 @@ class TextWidget:
             self.text["wrap"] = "none"
 
     def about(self):
-        tkinter.messagebox.showinfo('PyPad', 'A Notepad like app written in python with some additional features that are included under options in the menubar.\n\n~ Made by Ronik Bhattacharjee')
+        tkinter.messagebox.showinfo('PyPad', ' A Text Editor written in Python with some additional features other than the basic features of Notepad.\n\n~ Made by Ronik Bhattacharjee')
 
 
 
