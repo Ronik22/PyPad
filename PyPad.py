@@ -13,6 +13,9 @@ from tkfontchooser import askfont
 import webbrowser
 from googletrans import Translator
 from tkinter.scrolledtext import ScrolledText
+import pyttsx3
+import speech_recognition as sr
+from threading import Thread
 
 
 def PyPad():
@@ -71,8 +74,8 @@ def PyPad():
     view_menu=Menu(main_menu,tearoff=0)
     view_menu.add_command(label='Evaluate', command=k.evaluate)
     view_menu.add_command(label='Translate', command=k.translate)
-    # view_menu.add_command(label='Text to Speech', command=k.text_to_speech)
-    # view_menu.add_command(label='Speech to Text', command=k.speech_to_text)
+    view_menu.add_command(label='Text to Speech', command=k.text_to_speech)
+    view_menu.add_command(label='Speech to Text', command=k.speech_to_text)
     view_menu.add_command(label='Search on web', command=k.search_on_web)
 
     main_menu.add_cascade(label='File', menu = file_menu)
@@ -188,11 +191,13 @@ class TextWidget:
                 tkinter.messagebox.showinfo('PyPad', "Invalid expression")
         except:
             tkinter.messagebox.showinfo('PyPad', 'You need to select something to evaluate')
+        
 
 
     def translate(self):
 
         sel = None
+
         def translation_opt():
             t = opt_var.get()
             translator = Translator(service_urls=['translate.googleapis.com'])
@@ -346,11 +351,35 @@ class TextWidget:
                 tkinter.messagebox.showinfo('PyPad', e)
     
     def text_to_speech(self):
-        pass
+        try:
+            sel = self.text.selection_get()
+            engine = pyttsx3.init()
+            engine.say(sel)
+            engine.runAndWait()
+        except Exception as e:
+            tkinter.messagebox.showinfo('PyPad', "Select something to convert to speech")
+
 
     def speech_to_text(self):
-        pass
+        def capture():
+            rec = sr.Recognizer()
+            with sr.Microphone() as source:
+                audio = rec.listen(source, phrase_time_limit=5)
+            try:
+                text = rec.recognize_google(audio, language='en-US')
+                return text
+            except:
+                return 0
+        
+        while 1:
+            captured_text = capture().lower()
+            if captured_text == 0:
+                continue
+            if 'quit' in str(captured_text):
+                break
+            self.text.insert("insert", captured_text)
     
+
     def search_on_web(self):
         try:
             sel = self.text.selection_get()
