@@ -64,8 +64,8 @@ def PyPad():
     edit_menu.add_command(label='Copy', command=k.copy)
     edit_menu.add_command(label='Paste', command=k.paste)
     edit_menu.add_command(label='Delete', command=k.delete)
-    edit_menu.add_command(label='Undo', command=k.undo)
-    edit_menu.add_command(label='Redo', command=k.redo)
+    edit_menu.add_command(label='Undo', command=textfield.edit_undo)
+    edit_menu.add_command(label='Redo', command=textfield.edit_redo)
     edit_menu.add_command(label='Select All', command=k.select_all)
     edit_menu.add_command(label='Time/Date', command=k.timedate)
 
@@ -80,7 +80,9 @@ def PyPad():
     view_menu.add_command(label='Text to Speech', command=k.text_to_speech)
     view_menu.add_command(label='Speech to Text', command=k.speech_to_text)
     view_menu.add_command(label='Search on web', command=k.search_on_web)
-    view_menu.add_command(label='Search on web', command=k.capitalize)
+    view_menu.add_command(label='To UpperCase', command=k.to_upper_case)
+    view_menu.add_command(label='To LowerCase', command=k.to_lower_case)
+    view_menu.add_command(label='Total Characters', command=k.char_len)
 
     main_menu.add_cascade(label='File', menu = file_menu)
     main_menu.add_cascade(label='Edit', menu = edit_menu)
@@ -120,7 +122,25 @@ class TextWidget:
         ('Text', '*.txt'),
             ('All files', '*'),
         ]
+        # SPELL CHECK
+        self.text.tag_configure("misspelled", foreground="red", underline=True)
+        text.bind("<space>", self.Spellcheck)
+        self._words=open("./words_alpha.txt").read().split("\n")    # Source of words_alpha.txt :  https://github.com/dwyl/english-words
     
+
+    def Spellcheck(self, event):
+        index = self.text.search(r'\s', "insert", backwards=True, regexp=True)
+        if index == "":
+            index ="1.0"
+        else:
+            index = self.text.index("%s+1c" % index)
+        word = self.text.get(index, "insert")
+        if word in self._words:
+            self.text.tag_remove("misspelled", index, "%s+%dc" % (index, len(word)))
+        else:
+            self.text.tag_add("misspelled", index, "%s+%dc" % (index, len(word)))
+
+
     def save_file(self):
         if (self.filename == ''):
             self.save_file_as()
@@ -168,12 +188,6 @@ class TextWidget:
 
     def paste(self):
         pg.hotkey('ctrl','v')
-
-    def undo(self):
-        pg.hotkey('ctrl','z')
-
-    def redo(self):
-        pg.hotkey('ctrl','shift', 'z')
 
     def select_all(self):
         pg.hotkey('ctrl','a')
@@ -407,12 +421,29 @@ class TextWidget:
         except:
             tkinter.messagebox.showinfo('PyPad', 'You need to select something to search on web')
 
-    def capitalize(self):
+
+    def to_upper_case(self):
         try:
             sel = self.text.selection_get()
-            self.text.insert("insert",sel.upper())
-        except:
-            tkinter.messagebox.showinfo('PyPad', 'You need to select something to search on web')
+            self.text.delete(SEL_FIRST, SEL_LAST)
+            self.text.insert("insert", sel.upper())
+        except Exception as e:
+            tkinter.messagebox.showinfo('PyPad', "Select something")
+
+    def to_lower_case(self):
+        try:
+            sel = self.text.selection_get()
+            self.text.delete(SEL_FIRST, SEL_LAST)
+            self.text.insert("insert", sel.lower())
+        except Exception as e:
+            tkinter.messagebox.showinfo('PyPad', "Select something")
+
+    def char_len(self):
+        try:
+            sel = self.text.selection_get()
+            tkinter.messagebox.showinfo('PyPad', "Total Characters: " + str(len(sel)))
+        except Exception as e:
+            tkinter.messagebox.showinfo('PyPad', "Select something")
 
 
     def word_wrap(self):
