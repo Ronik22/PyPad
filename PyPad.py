@@ -21,7 +21,10 @@ from threading import Thread
 def PyPad():
     root = Tk()
     root.title("Untitled - PyPad")
-    root.geometry("500x500")
+    root.geometry("600x600")
+
+    status_bar = Frame(master=root,bg="#ededed",height=30, highlightthickness=1, highlightbackground="#cecece")    
+    status_bar.pack(side=BOTTOM,fill=X)
 
     scrollbar_y = Scrollbar(root)
     scrollbar_y.pack(side = RIGHT, fill = Y)
@@ -77,6 +80,7 @@ def PyPad():
     view_menu.add_command(label='Text to Speech', command=k.text_to_speech)
     view_menu.add_command(label='Speech to Text', command=k.speech_to_text)
     view_menu.add_command(label='Search on web', command=k.search_on_web)
+    view_menu.add_command(label='Search on web', command=k.capitalize)
 
     main_menu.add_cascade(label='File', menu = file_menu)
     main_menu.add_cascade(label='Edit', menu = edit_menu)
@@ -85,6 +89,22 @@ def PyPad():
     main_menu.add_command(label='About', command=k.about)
 
     root.config(menu=main_menu)
+
+    # STATUS BAR
+
+    def i_r_c(text):
+        mtext = text.split(".")
+        t = "Line "+mtext[0]+", Col "+mtext[1]
+        return t
+
+    idx = Label(status_bar, text=i_r_c(textfield.index(tkinter.INSERT)))  
+    idx.pack(side=RIGHT)
+
+    def update_statusbar(*args):
+        m = i_r_c(textfield.index(tkinter.INSERT))
+        idx["text"] = m
+
+    root.bind("<Key>", update_statusbar)
 
     root.mainloop()
 
@@ -384,6 +404,13 @@ class TextWidget:
         try:
             sel = self.text.selection_get()
             webbrowser.open(f'https://www.google.com/search?q={sel}')
+        except:
+            tkinter.messagebox.showinfo('PyPad', 'You need to select something to search on web')
+
+    def capitalize(self):
+        try:
+            sel = self.text.selection_get()
+            self.text.insert("insert",sel.upper())
         except:
             tkinter.messagebox.showinfo('PyPad', 'You need to select something to search on web')
 
