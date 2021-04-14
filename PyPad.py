@@ -15,6 +15,7 @@ from tkinter.scrolledtext import ScrolledText
 import pyttsx3
 import speech_recognition as sr
 from threading import Thread
+import re
 
 
 def PyPad():
@@ -56,6 +57,7 @@ def PyPad():
     file_menu.add_command(label='Open', command=k.open_file)
     file_menu.add_command(label='Save', command=k.save_file)
     file_menu.add_command(label='Save As', command=k.save_file_as)
+    file_menu.add_separator()
     file_menu.add_command(label='Exit All', command=k.exit)
 
     edit_menu=Menu(main_menu,tearoff=0)
@@ -63,25 +65,34 @@ def PyPad():
     edit_menu.add_command(label='Copy', command=k.copy)
     edit_menu.add_command(label='Paste', command=k.paste)
     edit_menu.add_command(label='Delete', command=k.delete)
+    edit_menu.add_separator()
     edit_menu.add_command(label='Undo', command=textfield.edit_undo)
     edit_menu.add_command(label='Redo', command=textfield.edit_redo)
     edit_menu.add_command(label='Select All', command=k.select_all)
+    edit_menu.add_separator()
     edit_menu.add_command(label='Time/Date', command=k.timedate)
 
     format_menu=Menu(main_menu,tearoff=0)
     format_menu.add_command(label='Font Color', command=k.font_color)
     format_menu.add_command(label='Font Style', command=k.font_style)
+    format_menu.add_separator()
     format_menu.add_command(label='Word Wrap', command=k.word_wrap)
 
     view_menu=Menu(main_menu,tearoff=0)
     view_menu.add_command(label='Evaluate', command=k.evaluate)
     view_menu.add_command(label='Translate', command=k.translate)
+    view_menu.add_separator()
     view_menu.add_command(label='Text to Speech', command=k.text_to_speech)
     view_menu.add_command(label='Speech to Text', command=k.speech_to_text)
+    view_menu.add_separator()
     view_menu.add_command(label='Search on web', command=k.search_on_web)
+    view_menu.add_command(label='Goto URL', command=k.goto_url)
+    view_menu.add_separator()
     view_menu.add_command(label='To UpperCase', command=k.to_upper_case)
     view_menu.add_command(label='To LowerCase', command=k.to_lower_case)
+    view_menu.add_separator()
     view_menu.add_command(label='Total Characters', command=k.char_len)
+    view_menu.add_command(label='Total Words', command=k.how_many_words)
 
     main_menu.add_cascade(label='File', menu = file_menu)
     main_menu.add_cascade(label='Edit', menu = edit_menu)
@@ -121,11 +132,16 @@ class TextWidget:
         ('Text', '*.txt'),
             ('All files', '*'),
         ]
+        
         # SPELL CHECK
         self.text.tag_configure("misspelled", foreground="red", underline=True)
-        text.bind("<space>", self.Spellcheck)
-        self._words=open("./words_alpha.txt").read().split("\n")    # Source of words_alpha.txt :  https://github.com/dwyl/english-words
-    
+        self._words=open("./words_alpha.txt").read().split("\n")   # Wordlist Link : https://github.com/dwyl/english-words
+
+        # LINK CHECK
+        self.text.tag_configure("url", foreground="blue", underline=True)
+
+        text.bind("<space>", lambda x: [self.Spellcheck(x), self.tag_links(x)])
+        
 
     def Spellcheck(self, event):
         index = self.text.search(r'\s', "insert", backwards=True, regexp=True)
@@ -138,6 +154,29 @@ class TextWidget:
             self.text.tag_remove("misspelled", index, "%s+%dc" % (index, len(word)))
         else:
             self.text.tag_add("misspelled", index, "%s+%dc" % (index, len(word)))
+
+
+    def tag_links(self, event):
+
+        index = self.text.search(r'\s', "insert", backwards=True, regexp=True)
+        if index == "":
+            index ="1.0"
+        else:
+            index = self.text.index("%s+1c" % index)
+        word = self.text.get(index, "insert")
+
+        regex = ("((http|https)://)(www.)?" +
+             "[a-zA-Z0-9@:%._\\+~#?&//=]" +
+             "{2,256}\\.[a-z]" +
+             "{2,6}\\b([-a-zA-Z0-9@:%" +
+             "._\\+~#?&//=]*)")
+     
+        p = re.compile(regex)
+    
+        if(re.search(p, word)):
+            self.text.tag_add("url", index, "%s+%dc" % (index, len(word)))
+        else:
+            self.text.tag_remove("url", index, "%s+%dc" % (index, len(word)))
 
 
     def save_file(self):
@@ -420,6 +459,13 @@ class TextWidget:
         except:
             tkinter.messagebox.showinfo('PyPad', 'You need to select something to search on web')
 
+    def goto_url(self):
+        try:
+            sel = self.text.selection_get()
+            webbrowser.open_new(sel)
+        except:
+            tkinter.messagebox.showinfo('PyPad', 'Select a link. Valid links will be underlined and highlighted in blue.')
+
 
     def to_upper_case(self):
         try:
@@ -441,6 +487,13 @@ class TextWidget:
         try:
             sel = self.text.selection_get()
             tkinter.messagebox.showinfo('PyPad', "Total Characters: " + str(len(sel)))
+        except Exception as e:
+            tkinter.messagebox.showinfo('PyPad', "Select something")
+
+    def how_many_words(self):
+        try:
+            sel = self.text.selection_get()
+            tkinter.messagebox.showinfo('PyPad', "Word Count: " + str(len(sel.split())))
         except Exception as e:
             tkinter.messagebox.showinfo('PyPad', "Select something")
 
