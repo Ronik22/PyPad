@@ -23,6 +23,10 @@ def PyPad():
     root.title("Untitled - PyPad")
     root.geometry("600x600")
 
+    # Setting icon of master window
+    icon = PhotoImage(file = 'ppad.png')
+    root.iconphoto(False, icon)
+
     status_bar = Frame(master=root,bg="#ededed",height=30, highlightthickness=1, highlightbackground="#cecece")    
     status_bar.pack(side=BOTTOM,fill=X)
 
