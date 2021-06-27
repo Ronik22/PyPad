@@ -23,11 +23,12 @@ For Speech to Text say the word `quit` to stop transcription.
 
 ## Usage
 
-### For direct use :
+### 1. For direct use :
 
-Go into the `build/PyPad` folder and double click on `PyPad.exe`
+* Go into the `build/PyPad` folder and double click on `PyPad.exe`
+* `PyPad` folder inside the `build` folder is portable
 
-### For development purpose :
+### 2. For development purpose :
 
     $ git clone https://github.com/Ronik22/PyPad.git
     $ cd PyPad
@@ -36,6 +37,6 @@ Go into the `build/PyPad` folder and double click on `PyPad.exe`
     (venv) pip install -r requirements.txt
     (venv) python PyPad.py
 
-Note for Python 3.4 users: replace `virtualenv` with `pyvenv`.
+* Note for Python 3.4 users: replace `virtualenv` with `pyvenv`.
 
-Note for Microsoft Windows users: replace the virtual environment activation command above with `venv\Scripts\activate`.
+* Note for Microsoft Windows users: replace the virtual environment activation command above with `venv\Scripts\activate`.
