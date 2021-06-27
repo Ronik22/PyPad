@@ -40,3 +40,5 @@ For Speech to Text say the word `quit` to stop transcription.
 * Note for Python 3.4 users: replace `virtualenv` with `pyvenv`.
 
 * Note for Microsoft Windows users: replace the virtual environment activation command above with `venv\Scripts\activate`.
+
+* Optimum version of PyAudio can be downloaded from here `https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyaudio`
