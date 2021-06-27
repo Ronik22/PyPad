@@ -25,8 +25,7 @@ For Speech to Text say the word `quit` to stop transcription.
 
 ### 1. For direct use :
 
-* Go into the `build/PyPad` folder and double click on `PyPad.exe`
-* `PyPad` folder inside the `build` folder is portable
+* Check `Releases (v1.0)` to download and extract `PyPad.zip`. Then go into the folder and double click on `PyPad.exe`.
 
 ### 2. For development purpose :
 
